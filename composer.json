@@ -1,0 +1,15 @@
+{
+    "name": "hiyan/service-container-payment-mock",
+    "type": "project",
+    "autoload": {
+        "psr-4": {
+            "Hiyan\\ServiceContainerPaymentMock\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Yan Brasiliano Silva Penalva"
+        }
+    ],
+    "require": {}
+}
