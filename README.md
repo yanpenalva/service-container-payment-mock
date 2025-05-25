@@ -4,7 +4,7 @@ This project is a mini implementation designed to explore **Service Container** 
 
 ## Features
 
--   **Service Container**: Demonstrates dependency injection and service resolution.
+-   **Service Container**: Implements a custom service container for dependency injection and service resolution.
 -   **Payment Providers**: Includes multiple mock payment providers:
     -   `PromptPaymentProvider`
     -   `BrutePaymentProvider`
@@ -16,50 +16,111 @@ This project is a mini implementation designed to explore **Service Container** 
 
 ```
 /src
-  /PaymentProviders
-    PromptPaymentProvider.php
+  /Core
+    Container.php
+  /Providers
+    /Abstracts
+      AbstractPaymentProvider.php
+    /Interfaces
+      PaymentProviderInterface.php
     BrutePaymentProvider.php
     PagaFacilPaymentProvider.php
-  CheckoutService.php
-  ServiceContainer.php
-/composer.json
+    PromptPaymentProvider.php
+  /Services
+    Checkout.php
+  /Utils
+    Http.php
+/bootstrap
+  container.php
+/public
+  index.php
 ```
 
 ## Installation
 
 1. Clone the repository:
     ```bash
-    git clone https://github.com/yourusername/service-container-payment-mock.git
-    ```
-2. Navigate to the project directory:
-    ```bash
+    git clone https://github.com/your-username/service-container-payment-mock.git
     cd service-container-payment-mock
     ```
-3. Install dependencies using Composer:
+2. Install dependencies:
     ```bash
     composer install
+    ```
+3. Run the application using the sail script:
+    ```bash
+    ./sail php public/index.php
     ```
 
 ## Usage
 
-To simulate a payment process, you can use the `CheckoutService` with any of the provided payment providers. For example, to use the `PromptPaymentProvider`:
+The application simulates a payment process using the Checkout service and a selected payment provider.
+The service container resolves dependencies automatically.
 
-```php
-$container = new ServiceContainer();
-$container->set('payment.provider', new PromptPaymentProvider());
+### Example Workflow
 
-$checkoutService = new CheckoutService($container);
-$response = $checkoutService->processPayment($orderDetails);
+1. The `public/index.php` file initializes the service container from `bootstrap/container.php`:
+
+    ```php
+    $container = require __DIR__ . '/../bootstrap/container.php';
+    ```
+
+2. A payment provider is resolved from the container:
+
+    ```php
+    $provider = $container->get(PagaFacilPaymentProvider::class);
+    ```
+
+3. The Checkout service processes the payment:
+
+    ```php
+    $checkout = new Checkout('customer@example.com', 1000);
+    print_r($checkout->handle($provider));
+    ```
+
+4. Run the script using the sail command:
+
+    ```bash
+    ./sail php public/index.php
+    ```
+
+### Example Output
+
+```json
+{
+    "status": "success",
+    "message": "Payment processed successfully",
+    "email": "customer@example.com",
+    "amount": 1000,
+    "transaction_id": "txn_123456",
+    "currency": "USD",
+    "timestamp": 1690000000,
+    "payment_method": "credit_card",
+    "payment_status": "completed"
+}
 ```
 
-## Testing
+## What's Inside the sail Script?
 
-To run the included tests:
+The sail script is a custom shell script that simplifies running commands in a specific environment, such as a Docker container. Here's what it typically does:
 
-```bash
-composer test
-```
+-   **Environment Setup**: Configures environment variables and paths required for the project.
+-   **Command Execution**: Forwards the provided command (e.g., `php public/index.php`) to the appropriate environment.
+-   **Docker Integration**: If Docker is used, it likely runs the command inside a Docker container using `docker-compose exec` or similar commands.
+
+For this project, the sail script ensures that the PHP script runs in the correct environment, making it easy to execute and test the application.
+
+## Adding a New Payment Provider
+
+1. Create a new class in `src/Providers/` that extends `AbstractPaymentProvider`.
+2. Implement the `currency()` method to define the provider's currency.
+3. Register the new provider in the service container (`bootstrap/container.php`).
+4. Use the new provider in `public/index.php`.
 
 ## License
 
-This project is open-source and available under the [MIT License](LICENSE).
+This project is licensed under the MIT License.
+
+## Author
+
+Created by Yan Brasiliano Silva Penalva.
