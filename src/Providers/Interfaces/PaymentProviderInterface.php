@@ -2,7 +2,7 @@
 
 namespace Hiyan\ServiceContainerPaymentMock\Providers\Interfaces;
 
-use  Hiyan\ServiceContainerPaymentMock\Utils\Http;
+use Hiyan\ServiceContainerPaymentMock\Utils\Http;
 
 
 interface PaymentProviderInterface {

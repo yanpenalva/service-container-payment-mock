@@ -1,17 +1,11 @@
 <?php
 
 use Hiyan\ServiceContainerPaymentMock\Services\Checkout;
-use Hiyan\ServiceContainerPaymentMock\Utils\Http;
 use Hiyan\ServiceContainerPaymentMock\Providers\PagaFacilPaymentProvider;
 
-require __DIR__ . '/../vendor/autoload.php';
+$container = require __DIR__ . '/../bootstrap/container.php';
 
-$service = new Checkout('customer@example.com', 1000);
+$provider = $container->get(PagaFacilPaymentProvider::class);
+$checkout = new Checkout('customer@example.com', 1000);
 
-print_r(
-    $service->handle(
-        new PagaFacilPaymentProvider(
-            new Http()
-        )
-    )
-);
+print_r($checkout->handle($provider));
